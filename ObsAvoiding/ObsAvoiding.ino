@@ -3,7 +3,7 @@
 // Global Constants
 #define sensorNum    4 
 #define maxDistance  400
-#define pingInterval 15
+#define pingInterval 30
 const uint8_t hBridgeA[sensorNum]  = {  2, 1, 5, 0 };
 const uint8_t hBridgeB[sensorNum]  = {  3, 4, 7, 6  };
 
@@ -25,22 +25,27 @@ NewPing sensor[sensorNum] = {
 };
 
 // Auxiliar Functions
+void bridgeControl(uint8_t pin, bool state);
 void motorsResponse();
-void bridgeControl(uint8_t pin, bool state); 
 
 void setup() {
   Serial.begin(115200);
   pinMode(clockPin, OUTPUT);
   pinMode(latchPin, OUTPUT);
   pinMode(dataPin, OUTPUT);
-  pinMode(enable, OUTPUT);
+  pinMode(enable, OUTPUT); 
+  digitalWrite(enable, LOW);
   
-  pingTimer[0] = millis() + 75;           
+  pingTimer[0] = millis() + 75;
   for (uint8_t i = 0; i < sensorNum; i++) {
-    pingTimer[i] = (i == 0) ? millis() + 75 : pingTimer[i - 1] + pingInterval;
+    if (i != 0)
+      pingTimer[i] = pingTimer[i - 1] + pingInterval; 
+      
     pinMode(motorsPWM[i], OUTPUT);
     pinMode(hBridgeA[i], OUTPUT);
     pinMode(hBridgeB[i], OUTPUT);
+    bridgeControl(hBridgeA[i], HIGH);
+    bridgeControl(hBridgeB[i], LOW);
   }
 }
 
@@ -55,38 +60,37 @@ void loop() {
   }
 }
 
-void motorReaction() {
-  for(uint8_t i = 0; i < sensorNum; i++) {
-    if(sensor[currentSensor].check_timer()) {
-      bridgeControl(hBridgeA[i], HIGH);
-      bridgeControl(hBridgeB[i], LOW);
-      unsigned int distance_CM = (sensor[currentSensor].ping_result / US_ROUNDTRIP_CM);
-      float distance = distance_CM / 100;
-      if(distance == 0.0)
-        distance = 4;
-
-      distance = map(distance, 0.5, 4, 255, 0);  
-      analogWrite(motorsPWM[i], distance);
-    } else {
-      bridgeControl(hBridgeA[i], LOW);
-      bridgeControl(hBridgeB[i], LOW);
-    }
-        
-  }
-}
-
 void bridgeControl(uint8_t pin, bool state) {
-  static uint8_t bridgeBuffer;
-  bitWrite(bridgeBuffer, pin%8, state);
-
-  digitalWrite(latchPin, LOW);
-  digitalWrite(dataPin, LOW);
+  static byte bridgeBuffer[1];
+  bitWrite(bridgeBuffer[pin / 8], pin % 8, state);
   
-  for (int b = 0; b < 8; b++) {
-    digitalWrite(clockPin, LOW);        
-    digitalWrite(dataPin,  bitRead(bridgeBuffer, b) );
-    
+  digitalWrite(latchPin, LOW); 
+  digitalWrite(dataPin, LOW);  
+  digitalWrite(clockPin, LOW);
+
+  for (int nB = 7; nB >= 0; nB--) {
+    digitalWrite(clockPin, LOW);  
+    digitalWrite(dataPin,  bitRead(bridgeBuffer[1], nB));
     digitalWrite(clockPin, HIGH); 
     digitalWrite(dataPin, LOW);     
   }  
+  
+  digitalWrite(latchPin, HIGH);  
+} 
+
+
+
+void motorReaction() {
+  if(sensor[currentSensor].check_timer()) {
+    float distance_CM = (sensor[currentSensor].ping_result / US_ROUNDTRIP_CM);
+    float distance = distance_CM / 100;
+    if(distance == 0.0)
+      distance = 4;
+       
+    distance = map(distance, 0.2, 4, 255, 0);  
+
+    bridgeControl(hBridgeA[currentSensor], HIGH);
+    bridgeControl(hBridgeB[currentSensor], LOW);  
+    analogWrite(motorsPWM[currentSensor], distance);
+  }
 }
