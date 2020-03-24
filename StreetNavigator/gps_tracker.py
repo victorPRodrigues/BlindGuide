@@ -1,6 +1,7 @@
 from math import sin, cos, sqrt, atan2, radians
 import requests
-
+import serial
+import pynmea2
 
 def path_finder(origin, destination, travel_mode, debug=False):
     end_point = 'https://maps.googleapis.com/maps/api/directions/json?'
@@ -13,6 +14,20 @@ def path_finder(origin, destination, travel_mode, debug=False):
         print(resp)
 
     return routes[0]['legs']
+
+
+def get_current_location():
+    port = serial.Serial('/dev/serial0', 9600, timeout=0.5)
+    while True:
+        while port.inWaiting() == 0:
+            pass
+        msg = port.readline()
+        line = str(msg)
+        if(line[2:8] == "$GPGLL"):
+            parsed_msg = pynmea2.parse(msg.decode('utf-8'))
+            lat = parsed_msg.latitude
+            long = parsed_msg.longitude
+            return((lat, long))
 
 
 def get_distance(**coordinates):
