@@ -3,6 +3,7 @@ import requests
 import serial
 import pynmea2
 
+
 def path_finder(origin, destination, travel_mode, debug=False):
     end_point = 'https://maps.googleapis.com/maps/api/directions/json?'
     api_key = 'Insert API KEY'
@@ -23,11 +24,11 @@ def get_current_location():
             pass
         msg = port.readline()
         line = str(msg)
-        if(line[2:8] == "$GPGLL"):
+        if (line[2:8] == "$GPGLL"):
             parsed_msg = pynmea2.parse(msg.decode('utf-8'))
             lat = parsed_msg.latitude
             long = parsed_msg.longitude
-            return((lat, long))
+            return ((lat, long))
 
 
 def get_distance(**coordinates):
@@ -40,13 +41,12 @@ def get_distance(**coordinates):
     dlon = lon2 - lon1
     dlat = lat2 - lat1
 
-    a = sin(dlat / 2)**2 + cos(lat1) * cos(lat2) * sin(dlon / 2)**2
+    a = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
 
     c = 2 * atan2(sqrt(a), sqrt(1 - a))
 
     return R * c * 1000
 
 
-
-
-
+def play_sound_notification(maneuver):
+    FILES_PATH = "/home/pi/DesktopBlindGuide/Audio_Nav_Files"
