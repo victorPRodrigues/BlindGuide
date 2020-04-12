@@ -3,41 +3,93 @@ import os
 import numpy as np
 import sys
 import importlib.util
+from pi_cam import PiCamera
 
 
-class Detector:
+def approximation():
+    MODEL_NAME = 'obj_detection_tflite'
+    GRAPH_NAME = 'detect.tflite'
+    LABELMAP_NAME = 'labelmap.txt'
+    min_conf_threshold = 0.6
+    imW, imH = 1280, 720
 
-    def __init__(self):
-        self.model = '/pi/Desktop/BlindGuide/model'
-        self.graph = 'detect.tflite'
-        self.label_map = 'l_map.txt'
-        self.threshold = 0.5
-        self.imWidth = 1280
-        self.imHeight = 720
+    pkg = importlib.util.find_spec('tflite_runtime')
+    if pkg:
+        from tflite_runtime.interpreter import Interpreter
 
-        pkg = importlib.util.find_spec('tflite_runtime')
-        if pkg:
-            from tflite_runtime.interpreter import Interpreter
-        else:
-            from tensorflow.lite.python.interpreter import Interpreter
+    else:
+        from tensorflow.lite.python.interpreter import Interpreter
 
-        self.model_path = os.join(self.model, self.graph)
-        self.labels_path = os.join(self.model, self.label_map)
+    CWD_PATH = os.getcwd()
 
-        with open(self.labels_path, 'r') as l:
-            self.labels = [line.strip() for line in l.readlines()]
+    PATH_TO_CKPT = os.path.join(CWD_PATH, MODEL_NAME, GRAPH_NAME)
+    PATH_TO_LABELS = os.path.join(CWD_PATH, MODEL_NAME, LABELMAP_NAME)
 
-        if self.labels[0] == '???':
-            del(self.labels[0])
+    with open(PATH_TO_LABELS, 'r') as f:
+        labels = [line.strip() for line in f.readlines()]
 
-        self.interpreter = Interpreter(model_path=self.model_path)
-        self.interpreter.allocate_tensors()
-        self.input_dets = self.interpreter.get_input_details()
-        self.output_dets = self.interpreter.get_output_details()
-        self.height = self.input_dets[0]['shape'][1]
-        self.width = self.input_dets[0]['shape'][2]
-        self.is_floating_model = self.input_dets[0]['dtype'] == np.float32
-        self.input_mean = 127.5
-        self.input_std = 127.5
-        self.frame_rate = 1
-        self.frequency = cv2.getTickFrequency()
+    if labels[0] == '???':
+        del (labels[0])
+
+    interpreter = Interpreter(model_path=PATH_TO_CKPT)
+    interpreter.allocate_tensors()
+
+    input_details = interpreter.get_input_details()
+    output_details = interpreter.get_output_details()
+    height = input_details[0]['shape'][1]
+    width = input_details[0]['shape'][2]
+
+    floating_model = (input_details[0]['dtype'] == np.float32)
+
+    input_mean = 127.5
+    input_std = 127.5
+
+    pi_camera = PiCamera(resolution=(imW, imH), framerate=30).start()
+    time.sleep(1)
+
+    p_height = 0
+    p_width = 0
+    detections = 0
+    approximation_detected = False
+    while True:
+        frame1 = pi_camera.read()
+
+        frame = frame1.copy()
+        frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        frame_resized = cv2.resize(frame_rgb, (width, height))
+        input_data = np.expand_dims(frame_resized, axis=0)
+
+        if floating_model:
+            input_data = (np.float32(input_data) - input_mean) / input_std
+
+        interpreter.set_tensor(input_details[0]['index'], input_data)
+        interpreter.invoke()
+
+        boxes = interpreter.get_tensor(output_details[0]['index'])[0]  # Bounding box coordinates of detections objects
+        classes = interpreter.get_tensor(output_details[1]['index'])[0]  # Class index of detections objects
+        scores = interpreter.get_tensor(output_details[2]['index'])[0]  # Confidence of detections objects
+
+        for i in range(len(scores)):
+
+            if (scores[i] > min_conf_threshold) and (scores[i] <= 1.0):
+                y_min = int(max(1, (boxes[i][0] * imH)))
+                x_min = int(max(1, (boxes[i][1] * imW)))
+                y_max = int(min(imH, (boxes[i][2] * imH)))
+                x_max = int(min(imW, (boxes[i][3] * imW)))
+                object_name = labels[int(classes[i])]
+
+                if object_name == 'car' or object_name == 'bus' or object_name == 'truck':
+                    detections += 1
+                    if (y_max - y_min) > p_height * 1.15 or (x_max - x_min) > p_width * 1.15\
+                            and detections > 1:
+                        approximation_detected = True
+                        break
+
+                    p_height = y_max - y_min
+                    p_width = x_max - x_min
+
+        if approximation_detected:
+            return True
+
+    cv2.destroyAllWindows()
+    PiCamera.stop()
