@@ -2,9 +2,15 @@ from math import sin, cos, sqrt, atan2, radians
 import requests
 import serial
 import pynmea2
+import pygame
+import json
 
 
-def path_finder(origin, destination, travel_mode, debug=False):
+def path_finder(origin='', destination='', travel_mode='', use_default_path=False, debug=False):
+    if use_default_path:
+        with open('macfei_to_D.json', r) as path:
+            return json.load(path)
+
     end_point = 'https://maps.googleapis.com/maps/api/directions/json?'
     api_key = 'Insert API KEY'
     nav_request = f'origin={origin}&destination={destination}&mode={travel_mode}&key={api_key}'
@@ -48,5 +54,13 @@ def get_distance(**coordinates):
     return R * c * 1000
 
 
-def play_sound_notification(maneuver):
-    FILES_PATH = "/home/pi/DesktopBlindGuide/Audio_Nav_Files"
+def play_sound_notification(action):
+    if !pygame.mixer.get_init():
+        pygame.mixer.init()
+    
+    path = "/home/pi/Desktop/BlindGuide/Audio_Nav_Files" + action +".mp3"
+
+    pygame.mixer.music.load(path)
+    pygame.mixer.music.play()
+    while pygame.mixer.music.get_busy():
+        continue
