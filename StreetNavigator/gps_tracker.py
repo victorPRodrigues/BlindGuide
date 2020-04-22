@@ -55,7 +55,7 @@ def get_distance(**coordinates):
 
 
 def play_sound_notification(action):
-    if !pygame.mixer.get_init():
+    if not(pygame.mixer.get_init()):
         pygame.mixer.init()
     
     path = "/home/pi/Desktop/BlindGuide/Audio_Nav_Files" + action +".mp3"

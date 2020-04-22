@@ -107,6 +107,8 @@ def approximation():
                     detections += 1
                     if (y_max - y_min) > p_height * 1.15 or (x_max - x_min) > p_width * 1.15\
                             and detections > 1:
+                        cv2.destroyAllWindows()
+                        PiCamera.stop()
                         return True
 
                     p_height = y_max - y_min
@@ -114,3 +116,4 @@ def approximation():
 
     cv2.destroyAllWindows()
     PiCamera.stop()
+    return False
