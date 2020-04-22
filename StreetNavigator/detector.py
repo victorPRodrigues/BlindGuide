@@ -3,7 +3,32 @@ import os
 import numpy as np
 import sys
 import importlib.util
+import time
 from pi_cam import PiCamera
+from gps_tracker import play_sound_notification
+
+def street_crosser():
+    play_sound_notification("look_right")
+    time.sleep(0.01)
+    verification(5)
+    time.sleep(0.01)
+    play_sound_notification("look_left")
+    verification(5)
+    play_sound_notification("all_clear")
+
+
+
+def verification(limit):
+    timer = time.time()
+    done = 0 
+    while timer < limit:
+        detected = approximation()
+        if detected:
+            play_sound_notification("waiting")
+            limit += timer
+
+        timer = time.time()
+
 
 
 def approximation():
@@ -82,14 +107,10 @@ def approximation():
                     detections += 1
                     if (y_max - y_min) > p_height * 1.15 or (x_max - x_min) > p_width * 1.15\
                             and detections > 1:
-                        approximation_detected = True
-                        break
+                        return True
 
                     p_height = y_max - y_min
                     p_width = x_max - x_min
-
-        if approximation_detected:
-            return True
 
     cv2.destroyAllWindows()
     PiCamera.stop()

@@ -1,0 +1,121 @@
+[
+    {
+        "distance": {
+            "text": "0.2 km",
+            "value": 202
+        },
+        "duration": {
+            "text": "3 mins",
+            "value": 155
+        },
+        "end_address": "Prédio D - Alves Dias, São Bernardo do Campo - SP, 09852, Brazil",
+        "end_location": {
+            "lat": -23.7259704,
+            "lng": -46.5797998
+        },
+        "start_address": "Av. Humberto A C Branco, 3972 - Assunção, São Bernardo do Campo - SP, 09850-305, Brazil",
+        "start_location": {
+            "lat": -23.7252365,
+            "lng": -46.5810921
+        },
+        "steps": [
+            {
+                "distance": {
+                    "text": "24 m",
+                    "value": 24
+                },
+                "duration": {
+                    "text": "1 min",
+                    "value": 17
+                },
+                "end_location": {
+                    "lat": -23.7251179,
+                    "lng": -46.5808996
+                },
+                "html_instructions": "Head <b>northeast</b> on <b>R. Lourdes Rabêlo</b><div style=\"font-size:0.9em\">Restricted usage road</div>",
+                "polyline": {
+                    "points": "vyxoCxzh{GWe@"
+                },
+                "start_location": {
+                    "lat": -23.7252365,
+                    "lng": -46.5810921
+                },
+                "travel_mode": "WALKING"
+            },
+            {
+                "distance": {
+                    "text": "0.1 km",
+                    "value": 100
+                },
+                "duration": {
+                    "text": "1 min",
+                    "value": 73
+                },
+                "end_location": {
+                    "lat": -23.7258655,
+                    "lng": -46.5803502
+                },
+                "html_instructions": "Turn <b>right</b><div style=\"font-size:0.9em\">Restricted usage road</div>",
+                "maneuver": "turn-right",
+                "polyline": {
+                    "points": "~xxoCryh{G~AgAZSXQ"
+                },
+                "start_location": {
+                    "lat": -23.7251179,
+                    "lng": -46.5808996
+                },
+                "travel_mode": "WALKING"
+            },
+            {
+                "distance": {
+                    "text": "42 m",
+                    "value": 42
+                },
+                "duration": {
+                    "text": "1 min",
+                    "value": 37
+                },
+                "end_location": {
+                    "lat": -23.7256979,
+                    "lng": -46.5799898
+                },
+                "html_instructions": "Turn <b>left</b><div style=\"font-size:0.9em\">Restricted usage road</div>",
+                "maneuver": "turn-left",
+                "polyline": {
+                    "points": "t}xoCdvh{GIOS_@CS?C"
+                },
+                "start_location": {
+                    "lat": -23.7258655,
+                    "lng": -46.5803502
+                },
+                "travel_mode": "WALKING"
+            },
+            {
+                "distance": {
+                    "text": "36 m",
+                    "value": 36
+                },
+                "duration": {
+                    "text": "1 min",
+                    "value": 28
+                },
+                "end_location": {
+                    "lat": -23.7259704,
+                    "lng": -46.5797998
+                },
+                "html_instructions": "Turn <b>right</b><div style=\"font-size:0.9em\">Restricted usage road</div>",
+                "maneuver": "turn-right",
+                "polyline": {
+                    "points": "r|xoC|sh{Gt@e@"
+                },
+                "start_location": {
+                    "lat": -23.7256979,
+                    "lng": -46.5799898
+                },
+                "travel_mode": "WALKING"
+            }
+        ],
+        "traffic_speed_entry": [],
+        "via_waypoint": []
+    }
+]
