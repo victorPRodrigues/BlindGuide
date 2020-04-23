@@ -1,4 +1,7 @@
 import gps_tracker
+import detector
+import RPi.GPIO as GPIO
+import time
 
 gps_tracker.play_sound_notification('welcome')
 
@@ -18,6 +21,9 @@ travel_mode = 'walking'
 resp = gps_tracker.path_finder(org, destination, travel_mode)
 steps = resp[0]['steps']
 
+street_crosser = 13
+GPIO.setup(street_crosser, GPIO.IN)
+
 # Path Tracking & Navigation
 for index, step in enumerate(steps):
     if not(index):
@@ -28,6 +34,10 @@ for index, step in enumerate(steps):
 
     distance = step['distance']['value']
     while distance >= 1:
+        if GPIO.input(street_crosser):
+            time.sleep(0.5)
+            detector.street_crosser()
+
         current_location = gps_tracker.get_current_location()
         distance = gps_tracker.get_distance(current_lat=current_location[0], 
                                             current_lng=current_location[1],
@@ -41,3 +51,8 @@ for index, step in enumerate(steps):
             gps_tracker.play_sound_notification("1m" + steps[index + 1]['maneuver'])
 
         print(distance)
+
+gps_tracker.play_sound_notification("reached")
+time.sleep(2)
+gps_tracker.play_sound_notification("ending_presentation")
+GPIO.cleanup()
