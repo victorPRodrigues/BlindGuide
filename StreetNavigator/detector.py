@@ -9,29 +9,17 @@ from gps_tracker import play_sound_notification
 
 def street_crosser():
     play_sound_notification("look_right")
-    time.sleep(0.01)
-    verification(5)
-    time.sleep(0.01)
+    time.sleep(1)
+    approximation(5)
+    time.sleep(1)
     play_sound_notification("look_left")
-    verification(5)
+    approximation(5)
     play_sound_notification("all_clear")
 
 
 
-def verification(limit):
-    timer = time.time()
-    done = 0 
-    while timer < limit:
-        detected = approximation()
-        if detected:
-            play_sound_notification("waiting")
-            limit += timer
-
-        timer = time.time()
-
-
-
-def approximation():
+def approximation(limit):
+    detect = 0
     MODEL_NAME = 'obj_detection_tflite'
     GRAPH_NAME = 'detect.tflite'
     LABELMAP_NAME = 'labelmap.txt'
@@ -76,7 +64,9 @@ def approximation():
     p_width = 0
     detections = 0
     approximation_detected = False
-    while True:
+    timer_mark = timer_start = time.time()
+    while timer_mark - timer_start < limit:
+        print(timer_mark - timer_start)
         frame1 = pi_camera.read()
 
         frame = frame1.copy()
@@ -107,13 +97,13 @@ def approximation():
                     detections += 1
                     if (y_max - y_min) > p_height * 1.15 or (x_max - x_min) > p_width * 1.15\
                             and detections > 1:
-                        cv2.destroyAllWindows()
-                        PiCamera.stop()
-                        return True
+                        play_sound_notification("waiting")
+                        limit += 3
 
                     p_height = y_max - y_min
                     p_width = x_max - x_min
+        
+        timer_mark = time.time()
 
     cv2.destroyAllWindows()
-    PiCamera.stop()
-    return False
+    pi_camera.stop()

@@ -29,6 +29,7 @@ def get_current_location():
         while port.inWaiting() == 0:
             pass
         msg = port.readline()
+        print(msg)
         line = str(msg)
         if (line[2:8] == "$GPGLL"):
             parsed_msg = pynmea2.parse(msg.decode('utf-8'))
@@ -58,7 +59,7 @@ def play_sound_notification(action):
     if not(pygame.mixer.get_init()):
         pygame.mixer.init()
     
-    path = "/home/pi/Desktop/BlindGuide/Audio_Nav_Files" + action +".mp3"
+    path = "/home/pi/Desktop/BlindGuide/Audio_Nav_Files/" + action +".mp3"
 
     pygame.mixer.music.load(path)
     pygame.mixer.music.play()
