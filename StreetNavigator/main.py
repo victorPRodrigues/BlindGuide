@@ -8,10 +8,11 @@ gps_tracker.play_sound_notification('welcome')
 while True:
     try:
         current_location = gps_tracker.get_current_location()
-        break
+        if current_location != (0.0, 0.0):
+            break
+        
     except:
         continue
-
 
 # Google MAPS Direction API Request
 org = 'Lanches Mac Fei, Av. Humberto A C Branco, 3972 - Assunção, São Bernardo do Campo - SP, 09850-305'.replace(' ',
@@ -22,6 +23,7 @@ resp = gps_tracker.path_finder(org, destination, travel_mode)
 steps = resp[0]['steps']
 
 street_crosser = 13
+GPIO.setmode(GPIO.BCM)
 GPIO.setup(street_crosser, GPIO.IN)
 
 # Path Tracking & Navigation
