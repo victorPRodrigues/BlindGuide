@@ -1,0 +1,73 @@
+[
+    {
+        "distance": {
+            "text": "48 m",
+            "value": 48
+        },
+        "duration": {
+            "text": "1 min",
+            "value": 30
+        },
+        "end_location": {
+            "lat": -23.6838603,
+            "lng": -46.7064428
+        },
+        "html_instructions": "Head <b>southeast</b> on <b>R. Estoril</b> toward <b>Av. dos Lagos</b>",
+        "polyline": {
+            "points": "lupoCfla|Gt@_A"
+        },
+        "start_location": {
+            "lat": -23.6835854,
+            "lng": -46.706764
+        },
+        "travel_mode": "WALKING"
+    },
+    {
+        "distance": {
+            "text": "37 m",
+            "value": 37
+        },
+        "duration": {
+            "text": "1 min",
+            "value": 26
+        },
+        "end_location": {
+            "lat": -23.684078,
+            "lng": -46.7066035
+        },
+        "html_instructions": "Turn <b>right</b> onto <b>Av. dos Lagos</b>",
+        "maneuver": "turn-right",
+        "polyline": {
+            "points": "bwpoCfja|G^TJH"
+        },
+        "start_location": {
+            "lat": -23.6838603,
+            "lng": -46.7064428
+        },
+        "travel_mode": "WALKING"
+    },
+    {
+        "distance": {
+            "text": "55 m",
+            "value": 55
+        },
+        "duration": {
+            "text": "1 min",
+            "value": 46
+        },
+        "end_location": {
+            "lat": -23.6837575,
+            "lng": -46.7069631
+        },
+        "html_instructions": "Turn <b>right</b> onto <b>R. Antônio Carlos de Andrade</b>",
+        "maneuver": "turn-right",
+        "polyline": {
+            "points": "nxpoCfka|G_AfA"
+        },
+        "start_location": {
+            "lat": -23.684078,
+            "lng": -46.7066035
+        },
+        "travel_mode": "WALKING"
+    }
+]

@@ -8,7 +8,7 @@ import json
 
 def path_finder(origin='', destination='', travel_mode='', use_default_path=False, debug=False):
     if use_default_path:
-        with open('macfei_to_D.json', r) as path:
+        with open('home.json', 'r') as path:
             return json.load(path)
 
     end_point = 'https://maps.googleapis.com/maps/api/directions/json?'
@@ -29,7 +29,6 @@ def get_current_location():
         while port.inWaiting() == 0:
             pass
         msg = port.readline()
-        print(msg)
         line = str(msg)
         if (line[2:8] == "$GPGLL"):
             parsed_msg = pynmea2.parse(msg.decode('utf-8'))

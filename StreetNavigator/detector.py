@@ -11,8 +11,8 @@ def street_crosser():
     play_sound_notification("look_right")
     time.sleep(1)
     approximation(5)
-    time.sleep(1)
     play_sound_notification("look_left")
+    time.sleep(1)
     approximation(5)
     play_sound_notification("all_clear")
 
